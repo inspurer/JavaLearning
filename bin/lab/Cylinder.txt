@@ -1,0 +1,20 @@
+Java编写代码过程中遇到了一个问题，main方法中创建内部类的实例时，编译阶段出现错误，查看错误描述：
+
+Multiple markers at this line
+ - The value of the local variable test is not used
+ - No enclosing instance of type StaticCallDynamic is accessible. Must qualify the allocation with an enclosing instance of type StaticCallDynamic (e.g. 
+  x.new A() where x is an instance of StaticCallDynamic).
+
+经过查证，是因为内部类是动态的（无static关键字修饰），而main方法是静态的，普通的内部类对象隐含地保存了一个引用，指向创建它的外围类对象，所以要在static方法（类加载时已经初始化）调用内部类的必须先创建外部类。即应该这样创建“DanymicTest test = new StaticCallDynamic().new DanymicTest();”其中StaticCallDynamic为外部类，DanymicTest为内部动态类；如果将内部内修改为静态类，可以在main中直接创建内部类实例。
+
+　　顺便看了下静态方法对动态方法的调用，如果在静态方法中直接调用静态方法，其中print()为类中的动态方法，会出现如下问题：
+
+Cannot make a static reference to the non-static method print() from the type StaticCallDynamic
+
+　　这个要从java的内存机制去分析，首先当你New 一个对象的时候，并不是先在堆中为对象开辟内存空间，而是先将类中的静态方法（带有static修饰的静态函数）的代码加载到一个叫做方法区的地方，然后再在堆内存中创建对象。所以说静态方法会随着类的加载而被加载。当你new一个对象时，该对象存在于对内存中，this关键字一般指该对象，但是如果没有new对象，而是通过类名调用该类的静态方法也可以。
+
+　　程序最终都是在内存中执行，变量只有在内存中占有一席之地时才会被访问，类的静态成员（变态和方法）属于类本身，在类加载的时候就会分配内存，可以通过类名直接去访问，非静态成员（变量和方法）属于类的对象，所以只有在类的对象产生（创建实例）的时候才会分配内存，然后通过类的对象去访问。在一个类的静态成员中去访问非静态成员之所以会出错是因为在类的非静态成员不存在的时候静态成员就已经存在了，访问一个内存中不存在的东西当然会出错。
+
+　　所以要么将方法也改为静态方法，要么通过创建该方法所在的实例再通过实例来调用。
+
+　　参考：http://www.2cto.com/kf/201502/375549.html

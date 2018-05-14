@@ -1,0 +1,54 @@
+1.一个控件对应多个监听时,如果加错监听名,相应的方法仍会触发但是,Event对象为Null...
+
+2.每次创建一个类继承一个父类就会出现如下警告
+  The serializable class DrawLine does not declare a static final 
+  serialVersionUID field of type long 
+
+   对象序列化时用到的一个id，不打算序列化的时候可以无视这个警告
+   注：序列化指在某些时候，比如内存不足时把某些对象保存到硬盘以节省内存的一种做法
+------------------2018/4/17 16:19-----------------------------------
+3.新建一个类继承自JFrame,this.setOpacity(0.4f)//设置透明度,报错;
+    因为JFrame窗口外有最小化/最大化/关闭 按钮 等Decoration,这些Decoration
+    在底层设计时可能设计为不可设置透明度，需要先this.setUnDecoration()去掉
+    
+4. 右键->Export->jar file 可导出.jar文件
+   步骤1：准备主清单文件 “MANIFEST.MF”，
+   由于是打包引用了第三方jar包的Java项目，故需要自定义配置文件MANIFEST.MF，
+   在该项目下建立文件MANIFEST.MF，内容如下:
+   Manifest-Version: 1.0
+   Class-Path: lib/commons-codec.jar lib/commons-httpclient-3.1.jar lib/commons-logging-1.1.jar lib/log4j-1.2.16.jar lib/jackson-all-1.8.5.jar
+   Main-Class: main.KillCheatFans
+  第一行是MAINIFEST的版本，第二行Class-Path就指定了外来jar包的位置，
+  第三行指定我们要执行的MAIN java文件。
+  //注意事项
+  1、Class-Path: 和Main-Class: 后边都有一个空格，必须加上，否则会打包失败，错误提示为：Invalid header field；
+
+  2、假设我们的项目打包后为KillCheatFans.jar，那么按照上面的定义，应该在 KillCheatFans.jar的同层目录下建立一个lib文件夹（即lib文件和打包的jar文件
+
+  在同一个目录下），并将相关的jar包放在里面。否则将会出现“Exception in thread "main" java.lang.NoClassDefFoundError”的错误；
+
+  3、Main-Class后面是类的全地址，比如你的主文件是KillCheatFans.java，文件里打包为package com.main; 那么这里就写com.main.KillCheatFans，
+
+  不要加.java后缀，主文件地址写错将会出现“找不到或无法加载主类”的错误；
+
+  4、写完Main-Class后一定要回车（即最后一行是空白行），让光标到下一行，这样你生成的jar包才能找到你的主class去运行，
+
+  否则将会出现“jar中没有主清单属性”的错误。
+ 
+   运行java文件: 1:直接在cmd下:java -jar filename.jar
+              2:在.jar同级的地方新建一个批处理文件，
+                              如start.bat，内容为：java -jar KillCheatFans.jar,以后点击自动运行即可; 
+  //系转载：http://www.cnblogs.com/lanxuezaipiao/p/3291641.html
+ ------------------2018/4/17 23:20----------------------------------
+ 1.三种打包方式的区别
+   第一个将依赖的jar解压出来变成class丢进你生成的jar里面；
+
+   第二个将依赖的jar不解压，直接放进你生成的jar里面；
+
+   将依赖的jar放到你生成jar的同级目录下的"xxx_lib"文件夹里面
+   
+ 2. Choose Runnable jar file
+ 
+ -----------------2018/4/22---------------------------
+1.天坑 ！！！！！Timer对象和JApplet,Timer.start()只能在小程序下用;
+Java.util.Timer才能在main()用
